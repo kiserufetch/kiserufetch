@@ -1,6 +1,6 @@
 <div align="center">
 
-### Flutter Developer · Mobile-first · Pixel Perfectionist
+### Flutter Developer
 
 [![Flutter](https://img.shields.io/badge/Flutter-%2302569B.svg?style=for-the-badge&logo=Flutter&logoColor=white)](https://flutter.dev)
 [![Dart](https://img.shields.io/badge/Dart-%230175C2.svg?style=for-the-badge&logo=dart&logoColor=white)](https://dart.dev)
@@ -15,9 +15,6 @@
 
 ```dart
 const developer = (
-  handle:   'kiseru',
-  stack:    ['Flutter', 'Dart', 'BLoC', 'Clean Architecture'],
-  vibes:    ['enterprise grind', 'pet projects', 'apps for friends'],
   status:   'open to interesting things 👀',
 );
 ```
@@ -32,15 +29,15 @@ const developer = (
 | **Architecture** | Clean Architecture, MVVM, Modularization |
 | **Native** | Platform Channels, iOS & Android basics |
 | **Data** | REST, Firebase, WebSockets, Dio |
-| **Testing** | Unit, Widget, Integration, Mockito |
+| **Testing** | Unit, Widget, Integration, Mocktail |
 | **CI/CD** | GitLab CI, TeamCity, Melos, Grafana |
 
 ## 📊 Stats
 
 <div align="center">
 
-![GitHub Stats](https://github-readme-stats.vercel.app/api?username=kiserufetch&show_icons=true&theme=tokyonight&hide_border=true)
-![Top Languages](https://github-readme-stats.vercel.app/api/top-langs/?username=kiserufetch&layout=compact&theme=tokyonight&hide_border=true)
+![GitHub Stats](https://github-stats-extended.vercel.app/api?username=kiserufetch&show_icons=true&theme=tokyonight&hide_border=true)
+![Top Languages](https://github-stats-extended.vercel.app/api/top-langs/?username=kiserufetch&layout=compact&theme=tokyonight&hide_border=true)
 
 </div>
 
