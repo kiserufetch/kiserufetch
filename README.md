@@ -32,11 +32,8 @@ const developer = (
 | **Testing** | Unit, Widget, Integration, Mocktail |
 | **CI/CD** | GitLab CI, TeamCity, Melos, Grafana |
 
-## 📊 Stats
-
 <div align="center">
 
-![GitHub Stats](https://github-stats-extended.vercel.app/api?username=kiserufetch&show_icons=true&theme=tokyonight&hide_border=true)
 ![Top Languages](https://github-stats-extended.vercel.app/api/top-langs/?username=kiserufetch&layout=compact&theme=tokyonight&hide_border=true)
 
 </div>
