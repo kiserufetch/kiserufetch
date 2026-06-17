@@ -1,52 +1,11 @@
 <div align="center">
-
-### Flutter Developer
-
-[![Flutter](https://img.shields.io/badge/Flutter-%2302569B.svg?style=for-the-badge&logo=Flutter&logoColor=white)](https://flutter.dev)
-[![Dart](https://img.shields.io/badge/Dart-%230175C2.svg?style=for-the-badge&logo=dart&logoColor=white)](https://dart.dev)
-[![Telegram](https://img.shields.io/badge/Telegram-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/sequential_bloc)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/kiseru)
-
-</div>
-
----
-
-## `$ whoami`
-
-```dart
-const developer = (
-  status:   'open to interesting things 👀',
-);
-```
-
----
-
-## 🛠 Stack
-
-| Layer | Tools |
-|---|---|
-| **Core** | Flutter, Dart, BLoC, Freezed, GetIt |
-| **Architecture** | Clean Architecture, MVVM, Modularization |
-| **Native** | Platform Channels, iOS & Android basics |
-| **Data** | REST, Firebase, WebSockets, Dio |
-| **Testing** | Unit, Widget, Integration, Mocktail |
-| **CI/CD** | GitLab CI, TeamCity, Melos, Grafana |
-
-<div align="center">
-
-![Top Languages](https://github-stats-extended.vercel.app/api/top-langs/?username=kiserufetch&layout=compact&theme=tokyonight&hide_border=true)
-
-</div>
-
----
-
-<div align="center">
-
-👋 **Hey** — human, recruiter, bot, or LLM scraper.  
-Glad you stopped by. Hope the code speaks for itself.
-
-`yaroslav.nosenko.pr@gmail.com`
-
-_`// TODO: push more, procrastinate less`_
-
+<img src="https://github.com/innng/innng/assets/26755058/5e0ce0fb-c544-4f8c-a307-5849165746d0" width="25%" align="right" />
+<img src="https://github.com/kiserufetch/kiserufetch/blob/main/assets/hello.gif" width="70%" />
+<br><br>
+<pre>
+    💻 Flutter Dev
+</pre>
+<br>
+<img src="https://raw.githubusercontent.com/innng/innng/master/assets/kyubey.gif" height="40" />
+<br><br>
 </div>
