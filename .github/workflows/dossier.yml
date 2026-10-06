@@ -1,0 +1,39 @@
+name: dossier
+
+on:
+  schedule:
+    - cron: "5 0 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dossier
+  cancel-in-progress: false
+
+jobs:
+  exhibit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Render dossier
+        env:
+          DOSSIER_TOKEN: ${{ secrets.DOSSIER_TOKEN }}
+          DOSSIER_EMAILS: ${{ secrets.DOSSIER_EMAILS }}
+          DOSSIER_SALT: ${{ secrets.DOSSIER_SALT }}
+        run: python -m dossier
+      - name: Commit exhibit
+        run: |
+          if git diff --quiet -- assets/dossier.svg README.md && [ -z "$(git ls-files --others --exclude-standard assets/dossier.svg)" ]; then
+            echo "nothing changed"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/dossier.svg README.md
+          git commit -m "chore(dossier): exhibit $(date -u +%F)"
+          git push
