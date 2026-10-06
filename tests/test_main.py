@@ -39,6 +39,11 @@ class RunTest(unittest.TestCase):
         self.assertIn("1 event · contents classified", svg)
         self.assertIn("?v=2026-10-06", self.readme.read_text(encoding="utf-8"))
 
+    def test_creates_missing_assets_directory(self):
+        self.svg = self.svg.parent / "assets" / "dossier.svg"
+        self.go()
+        self.assertTrue(self.svg.exists())
+
     def test_outputs_never_leak_repo_names_or_addresses(self):
         self.go()
         public = (self.svg.read_text(encoding="utf-8") + self.readme.read_text(encoding="utf-8")
