@@ -7,7 +7,7 @@ from datetime import date, datetime, timedelta, timezone
 from .github import ApiError
 
 CLAUDE_EMAIL = "noreply@anthropic.com"
-SKIP_STATUSES = frozenset({403, 404, 409, 451})
+SKIP_STATUSES = frozenset({404, 409, 451})  # plus a 403 that carries GitHub's block notice
 
 
 @dataclass(frozen=True)
@@ -67,7 +67,7 @@ def collect(client, *, login: str, emails: frozenset[str], today: date, log=prin
         try:
             commits = _repo_commits(client, repo, window)
         except ApiError as err:
-            if err.status in SKIP_STATUSES and not err.limited:
+            if (err.status in SKIP_STATUSES or err.blocked) and not err.limited:
                 log(f"skip repo #{index}: HTTP {err.status}")
                 continue
             raise ApiError(err.status, f"repo #{index}", limited=err.limited) from None

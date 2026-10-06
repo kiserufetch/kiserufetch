@@ -154,14 +154,21 @@ class CollectTest(unittest.TestCase):
         self.assertEqual((stats.total, stats.visible), (1, 1))
 
     def test_unavailable_repos_are_skipped_by_index(self):
-        for status in (403, 404, 409, 451):
-            with self.subTest(status=status):
+        for error in (ApiError(403, blocked=True), ApiError(404), ApiError(409), ApiError(451)):
+            with self.subTest(status=error.status):
                 logs = []
                 client = FakeClient([repo("ok"), repo("secret", private=True)],
                                     commits={"me/ok": [commit("a", "2026-05-05T00:00:00Z")]},
-                                    errors={"me/secret": ApiError(status)})
+                                    errors={"me/secret": error})
                 self.assertEqual(run(client, logs=logs).total, 1)
-                self.assertEqual(logs, [f"skip repo #2: HTTP {status}"])
+                self.assertEqual(logs, [f"skip repo #2: HTTP {error.status}"])
+
+    def test_403_that_is_not_a_block_fails_the_run(self):
+        client = FakeClient([repo("ok"), repo("secret", private=True)], errors={"me/secret": ApiError(403)})
+        with self.assertRaises(ApiError) as ctx:
+            run(client)
+        self.assertEqual(ctx.exception.status, 403)
+        self.assertIn("repo #2", str(ctx.exception))
 
     def test_fork_whose_parent_is_gone_is_skipped(self):
         class ParentGone(FakeClient):

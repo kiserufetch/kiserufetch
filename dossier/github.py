@@ -14,11 +14,21 @@ _NEXT = re.compile(r'<([^>]+)>;\s*rel="next"')
 
 
 class ApiError(Exception):
-    def __init__(self, status: int, where: str = "", *, limited: bool = False) -> None:
+    def __init__(self, status: int, where: str = "", *, limited: bool = False, blocked: bool = False) -> None:
         self.status = status
         self.where = where
         self.limited = limited
+        self.blocked = blocked
         super().__init__(f"GitHub API error: HTTP {status}" + (f" ({where})" if where else ""))
+
+
+def _error_body(err: urllib.error.HTTPError) -> dict:
+    """Parsed JSON error body, or {}. Never logged: a block notice can name the repository."""
+    try:
+        data = json.loads(err.read() or b"{}")
+    except (ValueError, OSError):
+        return {}
+    return data if isinstance(data, dict) else {}
 
 
 def next_link(header: str | None) -> str | None:
@@ -63,18 +73,26 @@ class GitHubClient:
             "User-Agent": "kiserufetch-dossier",
         })
         for attempt in range(self._retries + 1):
+            wait = self._pause * (attempt + 1)
             try:
                 with self._open(request, timeout=30) as response:
                     return json.load(response), response.headers
             except urllib.error.HTTPError as err:
                 status = err.code
-                remaining = (err.headers or {}).get("x-ratelimit-remaining")
-                limited = status == 429 or (status == 403 and remaining == "0")
+                headers = err.headers or {}
+                body = _error_body(err) if status in (403, 451) else {}
+                message = str(body.get("message", "")).lower()
+                retry_after = headers.get("retry-after")
+                limited = status == 429 or (status == 403 and (
+                    headers.get("x-ratelimit-remaining") == "0" or retry_after is not None or "rate limit" in message))
+                blocked = not limited and ("block" in body or "access blocked" in message)
                 if not (status >= 500 or limited) or attempt == self._retries:
-                    raise ApiError(status, limited=limited) from None
+                    raise ApiError(status, limited=limited, blocked=blocked) from None
+                if retry_after and retry_after.isdigit():
+                    wait = max(wait, min(int(retry_after), 120))
             except (urllib.error.URLError, TimeoutError, ConnectionError):
                 if attempt == self._retries:
                     raise ApiError(0) from None
             self._log(f"retry {attempt + 1}/{self._retries}")
-            self._sleep(self._pause * (attempt + 1))
+            self._sleep(wait)
         raise AssertionError("unreachable")

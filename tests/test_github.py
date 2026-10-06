@@ -1,3 +1,4 @@
+import io
 import json
 import unittest
 import urllib.error
@@ -28,9 +29,10 @@ class FakeResponse:
         return False
 
 
-def http_error(status, hdrs=None):
+def http_error(status, hdrs=None, body=None):
+    fp = io.BytesIO(json.dumps(body).encode()) if body is not None else None
     return urllib.error.HTTPError(
-        "https://api.github.com/repos/me/secret", status, "error", hdrs if hdrs is not None else headers(), None
+        "https://api.github.com/repos/me/secret", status, "error", hdrs if hdrs is not None else headers(), fp
     )
 
 
@@ -97,6 +99,41 @@ class ClientTest(unittest.TestCase):
             client(opener).get("/user")
         self.assertTrue(ctx.exception.limited)
         self.assertEqual(len(opener.requests), 4)
+
+    def test_secondary_rate_limit_with_retry_after_is_retried_and_flagged(self):
+        sleeps = []
+        limited = headers(retry_after="60", x_ratelimit_remaining="4870")
+        opener = FakeOpener(*[http_error(403, limited) for _ in range(4)])
+        with self.assertRaises(ApiError) as ctx:
+            client(opener, sleeps).get("/repos/me/secret/commits")
+        self.assertTrue(ctx.exception.limited)
+        self.assertEqual(len(opener.requests), 4)
+        self.assertTrue(all(s >= 60 for s in sleeps))
+
+    def test_rate_limit_message_in_body_is_flagged(self):
+        body = {"message": "You have exceeded a secondary rate limit. Please wait a few minutes."}
+        opener = FakeOpener(*[http_error(403, body=body) for _ in range(4)])
+        with self.assertRaises(ApiError) as ctx:
+            client(opener).get("/user")
+        self.assertTrue(ctx.exception.limited)
+        self.assertEqual(len(opener.requests), 4)
+
+    def test_blocked_repository_is_flagged_blocked(self):
+        body = {"message": "Repository access blocked", "block": {"reason": "tos"}}
+        opener = FakeOpener(http_error(403, body=body))
+        with self.assertRaises(ApiError) as ctx:
+            client(opener).get("/repos/me/secret/commits")
+        self.assertTrue(ctx.exception.blocked)
+        self.assertFalse(ctx.exception.limited)
+        self.assertEqual(len(opener.requests), 1)
+
+    def test_permission_403_is_neither_limited_nor_blocked(self):
+        body = {"message": "Resource not accessible by personal access token"}
+        opener = FakeOpener(http_error(403, body=body))
+        with self.assertRaises(ApiError) as ctx:
+            client(opener).get("/repos/me/secret/commits")
+        self.assertFalse(ctx.exception.blocked)
+        self.assertFalse(ctx.exception.limited)
 
     def test_client_errors_fail_immediately(self):
         for status in (401, 403, 404, 409, 451):
