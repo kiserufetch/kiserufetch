@@ -1,3 +1,3 @@
 <div align="center">
-  <img src="assets/dossier.svg?v=2026-11-19" width="100%" alt="Personnel file. Classified.">
+  <img src="assets/dossier.svg?v=2026-11-20" width="100%" alt="Personnel file. Classified.">
 </div>
